@@ -18,7 +18,7 @@ weather station variables which are
 set in configuration file config.py
 
 PORT        = 0     # device I2C port
-ADDRESS     = 77    # device I2C address
+ADDRESS     = 119   # device I2C address
 INTERVAL    = 300   # delay between each reading (secs)
 STATION_ID  = "my-station-id"
 STATION_KEY = "my-station-key"
@@ -74,7 +74,7 @@ def main():
     '''
 
     PORT          = int(cfg["station"]["port"])
-    ADDRESS       = int(cfg["station"]["address"],16)
+    ADDRESS       = int(cfg["station"]["address"])
     INTERVAL      = int(cfg["station"]["interval"])
     STATION_ID    = cfg["station"]["station_id"]
     STATION_KEY   = cfg["station"]["station_key"]
