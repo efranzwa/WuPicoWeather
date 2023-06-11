@@ -43,8 +43,8 @@ def sendDataWU(url,statid,statkey,temp,pres,humid,dewpt):
     ''' build url request string '''
     urlmod = url + "?"
     postdata = urlencode.urlencode(values)
-    postdata = postdata.encode('ascii')
-    req = requests.post(urlmod, data=postdata)
+    urlsum = urlmod + postdata
+    req = requests.post(urlsum)
 
     ''' uncomment for debugging '''
     #print("Server status code: ", req.status_code, "\n")
