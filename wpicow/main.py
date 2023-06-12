@@ -45,13 +45,11 @@ def sendDataWU(url,statid,statkey,temp,pres,humid,dewpt):
     postdata = urlencode.urlencode(values)
     urlsum = urlmod + postdata
     req = requests.post(urlsum)
+    req.close()
 
     ''' uncomment for debugging '''
     #print("Server status code: ", req.status_code, "\n")
     #print(req.headers)
-    #print(req.encoding)
-    #print(req.text)
-    #print(req.json())
 
 def c_to_f(input_temp):
     ''' convert Celsius to Farenheit '''
