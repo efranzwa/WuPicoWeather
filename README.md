@@ -29,12 +29,11 @@ Although there are several methods to interact with a microcontroller such as RP
 $ echo 'PATH=$PATH:~/.local/bin' >> .bashrc
 $ source ~/.bashrc
 $ pip install mpremote
-$ mpremote connect list          # this will show devices on usb
-$ mpremote connect /dev/ttyACM0  # make test connection to verify 
+$ mpremote connect list                    # this will show devices on usb
+$ mpremote connect                         # make test connection to verify 
 Connected to MicroPython at /dev/ttyACM0
-Use Ctrl-] to exit this shell    # press ctrl-] to exit shell
+Use Ctrl-] or Ctrl-x to exit this shell    # press Ctrl-x to exit shell
 $
-
 ```
 
 # MicroPython Installation
@@ -43,6 +42,7 @@ This guide assumes you are using a Raspberry Pi Pico W. Host computer OS is assu
 ```
 $ cd ~
 $ wget https://micropython.org/download/rp2-pico-w/rp2-pico-w-latest.uf2
+$ mpremote bootloader
 $ cp rp2-pico-w-latest.uf2 /media/<username>/RPI-RP2
 ```
 
@@ -54,6 +54,7 @@ Clone WuPicoWeather and BME280 project repositories into the current user home d
 $ cd ~
 $ git clone https://github.com/robert-hh/BME280.git
 $ mpremote cp BME280/bme280_float.py :
+cp BME280/bme280_float.py :
 $ git clone https://github.com/efranzwa/WuPicoWeather.git
 ```
 
@@ -73,25 +74,35 @@ $ mpremote run verifysensor.py
 ('19.69C', '1002.30hPa', '34.70%')
 ('19.70C', '1002.28hPa', '34.68%')
 ('19.72C', '1002.31hPa', '34.72%')
-$
 ```
 
 # WiFi Configuration
-Edit `config.py` with your favorite editor. My favorite is `vi` and should also be yours :sunglasses:.  Modify the "my-wifi-ssid" and "my-wifi-password" with your wifi credentials, keep the quotes. Keep in mind that the Pico W only works on 2.4G WiFi channels so make sure your access point has this enabled. Use the `wlanc.py` script to verify the device can make a successful WiFi connection.
+Copy `config.py` to the device. Edit `config.py` with your favorite editor. My favorite is `vi` and should also be yours :sunglasses:.  Modify the "my-wifi-ssid" and "my-wifi-password" with your wifi credentials, keep the quotes. Keep in mind that the Pico W only works on 2.4G WiFi channels so make sure your access point has this enabled. 
+```
+$ echo $EDITOR    # check to see that text editor is defined
+/usr/bin/vi       # this host uses vi
+$ mpremote cp config.py :
+cp config.py :
+$ mpremote edit config.py  # editor will open
+edit config.py
+```
+# WiFi Verification
+Use the `wlanc.py` script to verify the device can make a successful WiFi connection.
 ```
 $ mpremote run wlanc.py
 starting wifi
 waiting for connection....connected
 ip = 192.168.3.130
-$
 ```
 
 # Weather Station Configuration
 
-Edit `config.py` with your favorite editor, which is `vi` by the way.  Use the PORT and ADDRESS from sensor  verification.  INTERVAL sets time between sensor readings and is recommended at 300 seconds.  STATION ID and STATION KEY will come from your registration with Weather Underground.  WU URL is the address used for data upload. ALTITUDE will correct for local atmospheric pressure relative to sea level, enter this in feet. It may be noted that the config.py is a python dictionary with data in key:value pairs.
+Edit `config.py` with your favorite editor, which is `vi` by the way.  Use the PORT and ADDRESS from sensor  verification.  INTERVAL sets time between sensor readings and is recommended at 300 seconds.  STATION ID and STATION KEY will come from your registration with Weather Underground.  WU URL is the address used for data upload. ALTITUDE will correct for local atmospheric pressure relative to sea level, enter this in feet. It may be noted that the `config.py` is a python dictionary with data in key:value pairs.
 
 ```
-$ cat config.py
+$ mpremote edit config.py  # editor will open
+edit config.p
+$ mpremote cat config.py
 cfg = {
     "wlan": {
         "ssid" : "my-wifi-ssid",
@@ -112,21 +123,35 @@ cfg = {
 
 # Weather Station
 
-Configuration and verification of the required files is complete if all steps above have completed successfully. Copy python files from local project repository to the Raspberry Pi Pico W. Note that the getaddress.py and verifysensor.py are not needed to run the weather station but could be used to verify/debug sensor if needed.  Author has found that the sensors eventually degrade and stop functioning, most likely due to harsh weather exposure.
+Configuration and verification of the required files is complete if all steps above have completed successfully. Copy python files from local project repository to the Raspberry Pi Pico W. Note that the `getaddress.py` and `verifysensor.py` are not needed to run the weather station but could be used to verify/debug sensor if needed.  Author has found that the sensors eventually degrade and stop functioning, most likely due to harsh weather exposure.
 ```
-$ mpremote cp config.py :
-$ mpremote cp getaddress.py :
 $ mpremote cp main.py :
+cp main.py :
 $ mpremote cp urlencode.py :
-$ mpremote cp verifysensor.py :
+cp urlencode.py :
 $ mpremote cp wlanc.py :
+cp wlanc.py :
+$ mpremote cp getaddress.py :   # optional
+cp getaddress.py :
+$ mpremote cp verifysensor.py : # optional
+cp verifysensor.py :
 ```
 
 Perform a hard reset of device using mpremote. After hard reset the device should automatically run the `main.py` script which is the weather station code.
 ```
 $ mpremote exec "import machine; machine.reset()"
 ```
-At this point the WuPicoWeather should be running. As with the sensor verification step, the device LED should flash on/off in 1 second intervals as a sign that the code is still running and no fatal errors have been encountered which would stop the code execution.
+At this point the WuPicoWeather should be running. As with the sensor verification step, the device LED should flash on/off in 1 second intervals as a sign that the code is still running and no fatal errors have been encountered which would stop the code execution. To stop the code from running use the REPL interface.
+```
+$ mpremote
+Connected to MicroPython at /dev/ttyACM0
+Use Ctrl-] or Ctrl-x to exit this shell   # press Crtl-c to stop main.py
+Keyboard interrupt, exiting
+MicroPython v1.20.0 on 2023-04-26; Raspberry Pi Pico W with RP2040
+Type "help()" for more information.
+>>>                                       # Press Ctrl-x to exit REPL
+$
+```
 
 # Weather Data
 
