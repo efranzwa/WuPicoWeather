@@ -1,21 +1,27 @@
-import network
+""" wlanc.py
+
+wireless lan connect module
+"""
+
 from time import sleep
+import network
 
 def wlanc (ssid, pswd):
+    """ wireless lan connect function """
 
     print('starting wifi')
 
-    ssid = ssid
-    pswd = pswd
+    wl_ssid = ssid
+    wl_pswd = pswd
 
     wlan = network.WLAN(network.STA_IF)
-    if wlan.isconnected()==True:
+    if wlan.isconnected() is True:
         print('connected')
         status = wlan.ifconfig()
         print( 'ip = ' + status[0] + '\n')
         return
     wlan.active(True)
-    wlan.connect(ssid, pswd)
+    wlan.connect(wl_ssid, wl_pswd)
 
     # Wait for connect or fail
     max_wait = 10
@@ -30,10 +36,9 @@ def wlanc (ssid, pswd):
     # Handle connection error
     if wlan.status() != 3:
         raise RuntimeError('network connection failed')
-    else:
-        print('connected')
-        status = wlan.ifconfig()
-        print( 'ip = ' + status[0] + '\n')
+    print('connected')
+    status = wlan.ifconfig()
+    print( 'ip = ' + status[0] + '\n')
 
 if __name__=="__main__":
     from config import cfg

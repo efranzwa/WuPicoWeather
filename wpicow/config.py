@@ -1,3 +1,10 @@
+""" config.py
+
+configuration variables for
+wlan credentials
+weather station configuration
+"""
+
 cfg = {
     "wlan": {
         "ssid" : "my-wifi-ssid",
