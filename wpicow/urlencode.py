@@ -1,8 +1,9 @@
-"""
-    from urllib.parse
-    only urlencode has been kept
-    to reduce file size for micropython
-    new file name urlencode.py
+""" urlencode.py
+
+from urllib.parse
+only urlencode has been kept
+to reduce file size for micropython
+new file name urlencode.py
 """
 
 __all__ = ["urlencode", "quote", "quote_plus", "quote_from_bytes"]
@@ -94,7 +95,10 @@ def quote_from_bytes(bs, safe='/'):
     try:
         quoter = _safe_quoters[safe]
     except KeyError:
-        _safe_quoters[safe] = quoter = Quoter(safe).__getitem__
+        print("KeyError found")
+        #_safe_quoters[safe] = quoter = Quoter(safe).__getitem__
+        # Quoter Class requires collections.defaultdict
+        # which is not available in micropython
     return ''.join([quoter(char) for char in bs])
 
 def urlencode(query, doseq=False, safe='', encoding=None, errors=None):
@@ -126,10 +130,10 @@ def urlencode(query, doseq=False, safe='', encoding=None, errors=None):
             # but that's a minor nit.  Since the original implementation
             # allowed empty dicts that type of behavior probably should be
             # preserved for consistency
-        except TypeError:
+        except TypeError as exc:
 #            ty, va, tb = sys.exc_info()
             raise TypeError("not a valid non-string sequence "
-                            "or mapping object")#.with_traceback(tb)
+                            "or mapping object") from exc#.with_traceback(tb)
 
     l = []
     if not doseq:
@@ -161,6 +165,7 @@ def urlencode(query, doseq=False, safe='', encoding=None, errors=None):
                 try:
                     # Is this a sufficient test for sequence-ness?
                     x = len(v)
+                    print(x) # fix pylint W0612 missing variable
                 except TypeError:
                     # not a sequence
                     v = quote_plus(str(v), safe, encoding, errors)
