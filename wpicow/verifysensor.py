@@ -1,29 +1,41 @@
+""" verifysensor.py
+
+verify bme280 sensor on i2c bus
+"""
+
 import sys
-from machine import Pin, I2C
 from time import sleep
+from machine import Pin, I2C
 import bme280_float as bme280
 
-address = 119
+ADDRESS = 119
+REPEAT = 3
+INTERVAL = 10
+
 i2c=I2C(0,sda=Pin(0), scl=Pin(1), freq=100000)
 led = Pin('LED', Pin.OUT)
 sleep(1)
-repeat = 3
-interval = 10
 
 try:
     #while True:
-    for i in range(repeat):
-        bme=bme280.BME280(i2c=i2c, address=address)
+    for i in range(REPEAT):
+        bme=bme280.BME280(i2c=i2c, address=ADDRESS)
         print(bme.values)
         #sleep(10)
-        for j in range(interval):
+        for j in range(INTERVAL):
             led.on()
             sleep(0.5)
             led.off()
             sleep(0.5)
 
-except Exception as error:
-    print("\nException, exiting")
+except OSError as error:
+    print("\nOSError, exiting")
+    print(error)
+    led.off()
+    sys.exit(1)
+
+except RuntimeError as error:
+    print("\nRuntimeError, exiting")
     print(error)
     led.off()
     sys.exit(1)
