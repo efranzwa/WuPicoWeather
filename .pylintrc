@@ -1,0 +1,7 @@
+[MAIN]
+init-hook='import sys; sys.path.append('./BME280')'
+ignored-modules=network, machine, urequests, gc
+good-names-rgxs=^[_a-z][_a-z0-9]?$
+max-args=10
+max-branches=22
+max-nested-blocks=6
